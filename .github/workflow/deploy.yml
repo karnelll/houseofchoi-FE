@@ -21,9 +21,9 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.AUTH_TOKEN }} // 변경
         with:
           source-directory: 'output'
-          destination-github-username: 개인 깃헙 아이디 // 변경
-          destination-repository-name: fork 해 온 개인 레포 이름 // 변경
-          user-email: ${{ secrets.OFFICIAL_ACCOUNT_EMAIL }} // 변경
+          destination-github-username: karnelll
+          destination-repository-name: houseofchoi-FE
+          user-email: ${{ secrets.OFFICIAL_ACCOUNT_EMAIL }} 
           commit-message: ${{ github.event.commits[0].message }}
           target-branch: main
       - name: Test get variable exported by push-to-another-repository
