@@ -1,36 +1,30 @@
-name: Build and Push to Fork
+name: git push into another repo to deploy to vercel
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-sync:
+  build:
     runs-on: ubuntu-latest
-
+    container: pandoc/latex
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js & PNPM
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install PNPM
-        run: npm install -g pnpm
-
-      - name: Run build.sh
+      - uses: actions/checkout@v2
+      - name: Install mustache (to update the date)
+        run: apk add ruby && gem install mustache
+      - name: creates output
         run: sh ./build.sh
-
-      - name: Push to fork repository
+      - name: Pushes to another repository
+        id: push_directory
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.AUTH_TOKEN }}
+          API_TOKEN_GITHUB: ${{ secrets.AUTH_TOKEN }} // 변경
         with:
           source-directory: 'output'
-          destination-github-username: karnelll                      
-          destination-repository-name: houseofchoi-FE                
-          user-email: ${{ secrets.OFFICIAL_ACCOUNT_EMAIL }}
-          commit-message: "[deploy] 자동 푸시: 팀 → 개인 레포로 빌드 결과 전송"
+          destination-github-username: 개인 깃헙 아이디 // 변경
+          destination-repository-name: fork 해 온 개인 레포 이름 // 변경
+          user-email: ${{ secrets.OFFICIAL_ACCOUNT_EMAIL }} // 변경
+          commit-message: ${{ github.event.commits[0].message }}
           target-branch: main
+      - name: Test get variable exported by push-to-another-repository
+        run: echo $DESTINATION_CLONED_DIRECTORY
