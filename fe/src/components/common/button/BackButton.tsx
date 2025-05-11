@@ -8,7 +8,9 @@ interface BackButtonProps {
   href?: string;
   className?: string;
   iconSize?: number;
-  onClick?: () => void;
+  onClick?: (
+    e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
+  ) => void;
 }
 
 export default function BackButton({
@@ -19,11 +21,21 @@ export default function BackButton({
 }: BackButtonProps) {
   const router = useRouter();
 
-  const handleClick = () => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
+  ) => {
     if (onClick) {
-      onClick();
-    } else if (!href) {
-      router.back();
+      onClick(e); // 🔹 외부에서 전달된 onClick 먼저 실행
+    }
+
+    // 🔄 preventDefault가 호출되지 않았으면 뒤로가기 또는 페이지 이동
+    if (!e.defaultPrevented) {
+      if (!href) {
+        // ✅ history가 존재하면 router.back()
+        if (window.history.length > 1) {
+          router.back();
+        }
+      }
     }
   };
 
@@ -37,7 +49,7 @@ export default function BackButton({
   );
 
   return href ? (
-    <Link href={href} className={className}>
+    <Link href={href} className={className} onClick={handleClick}>
       {icon}
     </Link>
   ) : (
